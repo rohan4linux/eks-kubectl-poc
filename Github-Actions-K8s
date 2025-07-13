@@ -1,0 +1,170 @@
+I am working as aws devops engineer. We are using Agile scrum methodology.  I have a user story with below details:
+For kubernetes operations Earlier we were used to
+    Manuallu login to Dev client
+    switch b/w dev. test. pre, prod eks clusters
+     Run kubectl commands directly in the terminal(like kubectl get pod -n namespace, etc)
+Now, the requirement with GithubActions is to:
+setup pipeline
+    authenticate to AWS
+    Connects to the right eks cluster for the env (dev/test/pref/prod)
+     Runs predefined kubectl commands (such as get pod, get secres)
+    Display the command outputs in github actions logs for better visibility
+
+
+i am having aws free tier account . pls give step by step
+create github account, create eks cluster, create IAM role for github OIDC, Ad the role arn as github secret and github actions workflow and trigger the workflow?
+pls help
+
+
+
+Absolutely, Rohan! Here's your complete step-by-step guide to automate Kubernetes operations using GitHub Actions + AWS EKS, starting from scratch and ending with a working pipeline that runs kubectl commands and logs the output.
+
+🧩 Step-by-Step Guide: GitHub Actions + AWS EKS + OIDC
+
+🔐 Step 1: Create a GitHub Account
+If you don’t have one:
+	• Go to GitHub Sign Up
+	• Choose a username, email, and password
+	• Verify your email to activate the account
+More help: GitHub Docs – Creating an account
+
+☁️ Step 2: Create an EKS Cluster (Free Tier Friendly)
+✅ Prerequisites:
+	• Install AWS CLI, kubectl, and eksctl
+	• Configure AWS CLI: 
+aws configure
+🛠 Create Cluster with Managed Node Group:
+eksctl create cluster \
+  --name dev-cluster \
+  --region ap-south-1 \
+  --nodegroup-name dev-nodes \
+  --node-type t3.micro \
+  --nodes 2 \
+  --managed
+This creates a lightweight cluster suitable for testing.
+
+🔐 Step 3: Create OIDC Identity Provider (AWS Console)
+	1. Go to IAM Console
+	2. Click Identity providers → Add provider
+	3. Choose OpenID Connect
+	4. Enter: 
+		○ Provider URL: https://token.actions.githubusercontent.com
+		○ Audience: sts.amazonaws.com
+	5. Click Get thumbprint → then Add provider
+
+🛡️ Step 4: Create IAM Role for GitHub OIDC
+	1. Go to IAM → Roles → Create Role
+	2. Choose Web Identity → Select the OIDC provider you created
+	3. Set Audience to sts.amazonaws.com
+	4. Attach policies: 
+		○ AmazonEKSClusterPolicy
+		○ AmazonEKSServicePolicy
+		○ AmazonEC2ContainerRegistryReadOnly
+	5. Name the role: GitHubActionsEKSRole
+	6. Create the role
+📝 Edit Trust Policy:
+Go to the role → Trust relationships → Edit trust policy 
+Paste this (replace placeholders):
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::<YOUR_ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+      },
+      "StringLike": {
+        "token.actions.githubusercontent.com:sub": "repo:<your-org>/<your-repo>:*"
+      }
+    }
+  }]
+}
+
+🔑 Step 5: Add Role ARN as GitHub Secret
+	1. Go to your GitHub repo → Settings → Secrets → Actions
+	2. Add new secret: 
+		○ Name: AWS_ROLE_ARN
+		○ Value: IAM Role ARN from previous step
+
+⚙️ Step 6: Create GitHub Actions Workflow
+Create .github/workflows/k8s-ops.yml in your repo:
+name: EKS Kubectl Ops
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  kubectl-ops:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+- name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-south-1
+- name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ap-south-1 --name dev-cluster
+- name: Run kubectl commands
+        run: |
+          kubectl get pods -A
+          kubectl get secrets -A
+
+🚀 Step 7: Trigger the Workflow
+	• Go to Actions tab in GitHub
+	• Select EKS Kubectl Ops
+	• Click Run workflow
+You’ll see kubectl outputs directly in the logs!
+
+🧠 Bonus Tips
+	• Use workflow_dispatch inputs to select environments (dev/test/prod)
+	• Add Helm deployment steps if needed
+	• Use Slack/email notifications for visibility
+
+Would you like me to help you extend this workflow with Helm chart deployment or multi-environment support? You’re building a solid DevOps pipeline here, Rohan — let’s make it shine! 💪🚀
+
+From <https://copilot.microsoft.com/chats/9UsiMbV6QZyFsFBW7bhn2> 
+
+##############################################################################################
+
+Great question, Rohan! You don’t need to launch an EC2 instance just to run eksctl — you can execute those commands from any machine that has the required tools and network access. Here's a breakdown of your options:
+
+💻 Option 1: Run Locally on Your Laptop/Desktop
+Recommended for testing and ease. 
+Just install:
+	• 🧰 eksctl
+	• 🧰 AWS CLI
+	• 🧰 kubectl
+Then configure your AWS CLI:
+aws configure
+Make sure you've set up your IAM user and have credentials with EKS permissions.
+✅ Works on macOS, Linux, or Windows (via Git Bash or WSL).
+✅ Most DevOps engineers use this setup for quick testing.
+
+☁️ Option 2: Run from an EC2 Instance
+Only needed if:
+	• You want to test provisioning from inside a VPC
+	• You don’t want to expose credentials locally
+You'd need to:
+	• Launch an EC2 instance (Amazon Linux preferred)
+	• Install the same tools: eksctl, AWS CLI, kubectl
+	• Either attach an IAM role to EC2, or configure AWS CLI manually
+💡 Useful if you're automating cluster creation as part of infrastructure bootstrapping.
+
+🧪 Bonus Tip
+You can also run eksctl commands from:
+	• GitHub Actions
+	• CloudShell (browser-based AWS CLI)
+	• CI/CD tools like Jenkins
+
+############################################################################################
+
+
+
+
