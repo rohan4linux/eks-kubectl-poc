@@ -1,0 +1,99 @@
+Different workflow files
+
+13 July 2025
+14:03
+
+ok now coming to up github actions workflow setup in my project.  I mean for the below workflow 
+name: EKS Kubectl Ops
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  kubectl-ops:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region us-east-1 --name dev-cluster
+
+      - name: Run kubectl commands
+        run: |
+          kubectl get nodes
+
+here in my project we have dev, test, pref and prod environmnets and in each environment we have a eks cluster. So my lead is telling as "For differenet environments we can create different workflow files in same repo or can add a dropdown to select environment".
+Could you please help me with "different workflow files in same repo" now first ?
+
+
+Absolutely, Rohan — let’s tackle the “separate workflow files per environment” approach in GitHub Actions. This method is clean and modular, especially when each environment (dev, test, pref, prod) has its own EKS cluster with its own role ARN and config.
+
+
+🗂️ Separate Workflow Files — Structure
+Each file lives in .github/workflows/ and handles a specific environment. Here’s a recommended layout:
+.github/workflows/
+├── eks-dev.yml
+├── eks-test.yml
+├── eks-pref.yml
+└── eks-prod.yml
+
+
+
+🔧 Example: eks-dev.yml
+name: EKS Kubectl Ops - Dev
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  kubectl-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+- name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: us-east-1
+
+- name: Update kubeconfig
+        run: aws eks update-kubeconfig --region us-east-1 --name dev-cluster
+
+- name: Run kubectl commands
+        run: |
+          kubectl get pods -A
+          kubectl get secrets -A
+
+🔐 For each workflow, add the appropriate secret in your GitHub repo settings:
+	• AWS_ROLE_ARN_DEV
+	• AWS_ROLE_ARN_TEST
+	• AWS_ROLE_ARN_PREF
+	• AWS_ROLE_ARN_PROD
+You can also change the cluster name and region per workflow.
+
+
+🧠 Benefits of This Approach
+Feature	Benefit
+🧭 Clear separation	Each environment gets its own file — easier to audit and manage
+🔐 Scoped secrets	Different IAM roles and cluster names per env → security boundary
+🛠 Modular automation	You can update workflows independently (e.g., redeploy dev without touching prod)
+🚀 Parallel runs	Run different environment workflows simultaneously
+
+
