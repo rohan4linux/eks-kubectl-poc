@@ -1,0 +1,46 @@
+name: EKS Kubectl Ops
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select the environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - test
+          - pref
+          - prod
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  kubectl-ops:
+    runs-on: ubuntu-latest
+
+    env:
+      ENV: ${{ github.event.inputs.environment }}
+      CLUSTER_NAME: ${{ github.event.inputs.environment }}-cluster
+      AWS_ROLE_ARN: ${{ secrets.AWS_ARN }}  # Single shared IAM role
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig for selected environment
+        run: aws eks update-kubeconfig --region us-east-1 --name $CLUSTER_NAME
+
+      - name: Run kubectl commands
+        run: |
+          echo "Environment: $ENV"
+          kubectl get nodes
