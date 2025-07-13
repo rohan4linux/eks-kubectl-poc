@@ -81,3 +81,38 @@ Let me know if you want to add Helm deployment logic or restrict access based on
 
 From <https://copilot.microsoft.com/chats/9UsiMbV6QZyFsFBW7bhn2> 
 
+
+############################################################################################################################################################################################
+
+please explain below 
+env: 
+CLUSTER_NAME: ${{ github.event.inputs.environment }}-cluster 
+AWS_ROLE_ARN: ${{ secrets['AWS_ROLE_ARN_' + github.event.inputs.environment] }}
+
+
+Absolutely, Rohan! You're looking at a clever use of GitHub Actions expressions to dynamically assign values based on the environment selected at runtime. Here's a breakdown of each line:
+
+
+🔧 CLUSTER_NAME: ${{ github.event.inputs.environment }}-cluster
+This sets the environment variable CLUSTER_NAME to something like:
+	• dev-cluster if the user selects dev
+	• test-cluster if they select test
+	• and so on...
+It appends -cluster to the environment name chosen via the dropdown input (github.event.inputs.environment). This is used later in your workflow when updating kubeconfig:
+aws eks update-kubeconfig --name $CLUSTER_NAME
+
+
+
+🔐 AWS_ROLE_ARN: ${{ secrets['AWS_ROLE_ARN_' + github.event.inputs.environment] }}
+This line dynamically selects the correct IAM role secret based on the chosen environment:
+	• If environment = dev → it resolves to secrets.AWS_ROLE_ARN_dev
+	• If environment = prod → it resolves to secrets.AWS_ROLE_ARN_prod
+💡 Why it’s smart: 
+You don’t hardcode secrets. Instead, you create one workflow file and pull in the right credentials using the input selector. This keeps it DRY, secure, and scalable.
+
+
+Let me know if you'd like to extend this pattern to handle cluster regions or namespace-specific commands. You’ve got full control now and you’re making the pipeline look razor-sharp 💥🧠
+
+From <https://copilot.microsoft.com/chats/9UsiMbV6QZyFsFBW7bhn2> 
+
+############################################################################################
