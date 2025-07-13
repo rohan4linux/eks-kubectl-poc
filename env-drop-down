@@ -33,28 +33,28 @@ permissions:
 jobs:
   kubectl-ops:
     runs-on: ubuntu-latest
-
-env:
+    env:
       CLUSTER_NAME: ${{ github.event.inputs.environment }}-cluster
       AWS_ROLE_ARN: ${{ secrets['AWS_ROLE_ARN_' + github.event.inputs.environment] }}
 
-steps:
+    steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-- name: Configure AWS Credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
-- name: Update kubeconfig
+      - name: Update kubeconfig
         run: aws eks update-kubeconfig --region us-east-1 --name $CLUSTER_NAME
 
-- name: Run kubectl commands
+      - name: Run kubectl commands
         run: |
           kubectl get pods -A
           kubectl get secrets -A
+
 
 
 
