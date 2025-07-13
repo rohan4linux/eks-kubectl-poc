@@ -1,4 +1,4 @@
-name: EKS Kubectl Ops
+name: dev-eks
 
 on:
   workflow_dispatch:
