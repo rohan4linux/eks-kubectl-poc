@@ -1,0 +1,10 @@
+“Hi, my name is Rohan Reddy. I’m currently working as a DevOps Engineer at Vodafone Intelligent Solutions (VOIS), with over 7.5 years of total experience and 5+ years of hands-on DevOps and cloud experience.
+
+In my current role, I’ve been responsible for architecting and automating secure, scalable AWS infrastructure using services like EC2, VPC, EKS, RDS, S3, and IAM. I work extensively with Kubernetes on AWS EKS to deploy containerized microservices, using Helm for packaging and ArgoCD for GitOps-based deployments.
+
+I’ve built robust CI/CD pipelines using GitHub Actions and Jenkins, integrating tools like SonarQube and Trivy for DevSecOps, and managing secrets through AWS Secrets Manager. My IaC expertise includes Terraform and Ansible, which I use for provisioning and configuration management.
+
+I also focus on observability—building dashboards in Grafana, setting alerts via Prometheus, and monitoring metrics and logs with CloudWatch to ensure high availability and fast incident response.
+
+Overall, I enjoy optimizing DevOps workflows and collaborating with cross-functional teams to improve automation, security, and reliability across the delivery lifecycle.”
+
