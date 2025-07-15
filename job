@@ -1,10 +1,23 @@
-“Hi, my name is Rohan Reddy. I’m currently working as a DevOps Engineer at Vodafone Intelligent Solutions (VOIS), with over 7.5 years of total experience and 5+ years of hands-on DevOps and cloud experience.
+“Hi, my name is Rohan Reddy. I have around 7 and a half years of experience in IT, with the last 6+ years focused on DevOps and cloud technologies.
 
-In my current role, I’ve been responsible for architecting and automating secure, scalable AWS infrastructure using services like EC2, VPC, EKS, RDS, S3, and IAM. I work extensively with Kubernetes on AWS EKS to deploy containerized microservices, using Helm for packaging and ArgoCD for GitOps-based deployments.
+Currently, I am working as a DevOps Engineer at VOIS (Vodafone Intelligent Solutions), since January 2024.
 
-I’ve built robust CI/CD pipelines using GitHub Actions and Jenkins, integrating tools like SonarQube and Trivy for DevSecOps, and managing secrets through AWS Secrets Manager. My IaC expertise includes Terraform and Ansible, which I use for provisioning and configuration management.
+In my current role, I work mainly on AWS services like EC2, S3, RDS, IAM, VPC, Route 53, CloudWatch, EBS, and EFS to set up and manage cloud infrastructure.
 
-I also focus on observability—building dashboards in Grafana, setting alerts via Prometheus, and monitoring metrics and logs with CloudWatch to ensure high availability and fast incident response.
+I manage containerized applications using Kubernetes on EKS and deploy workloads using Helm charts and ArgoCD.
 
-Overall, I enjoy optimizing DevOps workflows and collaborating with cross-functional teams to improve automation, security, and reliability across the delivery lifecycle.”
+I’ve worked with CloudWatch, CloudTrail, Config, and GuardDuty for logging, monitoring, and improving security visibility.
 
+I build and maintain CI/CD pipelines using GitHub Actions, and I use Terraform and CloudFormation to automate AWS resource provisioning.
+
+For secure environments, I have used WAF, Shield, and ACM certificates to protect web applications and encrypt communication.
+
+I’ve also worked with services like SNS, SQS, and EventBridge for notifications and event-driven automation.
+
+In storage, I’ve used EBS, EFS, and AWS Backup for persistent data needs and backups.
+
+I also set up Auto Scaling Groups, manage Lambda functions, and have knowledge of Elastic Beanstalk for application deployments.
+
+I collaborate closely with developers and testers, help in resolving CI/CD issues, and take part in monitoring dashboards using Prometheus, Grafana, and CloudWatch metrics.
+
+Overall, my goal is to ensure secure, scalable, and highly available cloud environments.”
